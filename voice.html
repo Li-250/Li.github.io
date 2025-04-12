@@ -1,0 +1,41 @@
+<!-- 新建txt文档，复制以下代码，重命名为 voice.html -->
+<!DOCTYPE html>
+<html>
+<body>
+<!-- 豆包对话窗口 -->
+<iframe src="https://doubao.com/bot/2rBnHyid" width="100%" height="400"></iframe>
+
+<!-- 免费语音控制模块 -->
+<button id="mic" style="position:fixed; bottom:20px; right:20px; padding:15px; border-radius:50%; background:red; color:white;">按住说话</button>
+
+<script>
+// 浏览器原生语音识别（Chrome/Edge安卓版可用）
+const mic = document.getElementById('mic');
+let recognition;
+
+mic.addEventListener('touchstart', () => {
+  recognition = new webkitSpeechRecognition();
+  recognition.lang = 'zh-CN';
+  recognition.onresult = (e) => {
+    const text = e.results[0][0].transcript;
+    // 将语音转文字输入豆包（需手动操作焦点）
+    document.querySelector('iframe').contentWindow.document.querySelector('input').value = text;
+    document.querySelector('iframe').contentWindow.document.querySelector('button').click();
+  };
+  recognition.start();
+});
+
+mic.addEventListener('touchend', () => recognition.stop());
+   // 在script末尾追加
+   const synth = window.speechSynthesis;
+   setInterval(() => {
+     const reply = document.querySelector('iframe').contentWindow.document.querySelector('.reply-text');
+     if(reply && !reply.dataset.spoken) {
+       const utterance = new SpeechSynthesisUtterance(reply.innerText);
+       synth.speak(utterance);
+       reply.dataset.spoken = true;
+     }
+   }, 1000);
+</script>
+</body>
+</html>
